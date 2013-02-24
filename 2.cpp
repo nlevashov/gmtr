@@ -32,33 +32,32 @@ class MyVector {
 
 	public:
 		MyVector() {
-			startPoint = (SPoint *) malloc(sizeof(SPoint) * 64);
-			if (startPoint == NULL) 
+			startPoint = new SPoint[64];
 			memory = 64;
 			num = 0;
 		}
 
 		MyVector(unsigned int n) {
-			startPoint = (SPoint *) malloc(sizeof(SPoint) * n);
+			startPoint = new SPoint[n];
 			memory = n;
 			num = n;
 		}
 
 		MyVector(MyVector const & v) {
-			startPoint = (SPoint *) malloc(sizeof(SPoint) * v.num);
+			startPoint = new SPoint[v.num];
 			memcpy(startPoint, v.startPoint, sizeof(SPoint) * v.num);
 			memory = v.num;
 			num = v.num;
 		}
 
 		~MyVector() {
-			free(startPoint);
+			delete startPoint;
 		}
 
 		unsigned int getNum() { return num; }
 
 		MyVector operator=(MyVector const & v) {
-			startPoint = (SPoint *) realloc(startPoint, sizeof(SPoint) * v.num);
+			startPoint = (SPoint *) realloc(startPoint, sizeof(SPoint) * v.num); //аналог в с++?
 			memcpy(startPoint, v.startPoint, sizeof(SPoint) * v.num);
 			memory = v.num;
 			num = v.num;

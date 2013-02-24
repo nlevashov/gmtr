@@ -103,38 +103,21 @@ class Poly : public AFigure {
 			}
 
 			aSorted.sort();
-
-		//	cout << aSorted.getNum() << endl;
-		//	for (int i = 0; i < aSorted.getNum(); ++i) cout << aSorted[i].x << ' ' << aSorted[i].y << ' ';
-
 			r.sort();
-
-		//	cout << endl << r.getNum() << endl;
-		//	for (int i = 0; i < r.getNum(); ++i) cout << r[i].x << ' ' << r[i].y << ' ';
-		//	cout << endl;
-
 			for (int i = k - 1; i >= 0; --i) aSorted[j++] = r[i];
 
 			unsigned int aSortedNum = aSorted.getNum();
-		//	cout << aSortedNum << endl;
-
-		//	for (int i = 0; i < aSortedNum; ++i) cout << aSorted[i].x << ' ' << aSorted[i].y << ' ';
-		//	cout << endl;
-
 			for (int i = 1; i < aSortedNum; ++i)
 				aAngles[i] = (aSorted[i].x - aSorted[0].x)
 						/ sqrt((aSorted[i].x - aSorted[0].x) * (aSorted[i].x - aSorted[0].x)
 							 + (aSorted[i].y - aSorted[0].y) * (aSorted[i].y - aSorted[0].y));
-
-		//	for (int i = 1; i < aSortedNum; ++i) cout << aAngles[i] << ' ';
-		//	cout << endl;
 		}
 
 	public:
 		Poly() {
 			cin >> angleNum;
 			for (int i = 0; i < angleNum; ++i) cin >> a[i].x >> a[i].y;
-			aAngles = (double *) malloc(sizeof(double) * angleNum);
+			aAngles = new double[angleNum];
 			aSort();
 			square = 0;
 			for (int i = 2; i < angleNum; ++i)
@@ -148,11 +131,17 @@ class Poly : public AFigure {
 				a[i].x = b[i];
 				a[i].y = b[i + 1];
 			}
-			aAngles = (double *) malloc(sizeof(double) * angleNum);
+			aAngles = new double[angleNum];
 			aSort();
+			square = 0;
 			for (int i = 2; i < angleNum; ++i)
 				square += abs( (aSorted[i-1].x - aSorted[0].x) * (aSorted[i].y - aSorted[0].y)
 						- (aSorted[i].x - aSorted[0].x) * (aSorted[i-1].y - aSorted[0].y) ) / 2;
+		}
+
+		~Poly() {
+			delete aAngles;
+			//удалятся ли остальные?
 		}
 
 		unsigned int getAngleNum() { return angleNum; }
@@ -170,12 +159,12 @@ class Poly : public AFigure {
 						break;
 					}
 				}
-		//		cout << cosP << ' ' << flag << ' ' << i << ' ' << Segment(aSorted[0].x, aSorted[0].y, aSorted[1].x, aSorted[1].y).isContain(p) << endl;
+
 				if (flag && ((i != 1) || (i == 1) && Segment(aSorted[0].x, aSorted[0].y, aSorted[1].x, aSorted[1].y).isContain(p))) {	//i-1, i
 					Segment s(aSorted[i-1].x, aSorted[i-1].y, aSorted[i].x, aSorted[i].y);
-		//			cout << s.isContain(p) << ' ' << s.isIntersect(Segment(aSorted[0].x, aSorted[0].y, p.x, p.y)) << endl;
 					return ( s.isContain(p) || (! s.isIntersect(Segment(aSorted[0].x, aSorted[0].y, p.x, p.y))) );
 				} else return false;
+
 			} else return false;
 		}
 
@@ -234,8 +223,5 @@ class Circle : public AFigure {
 
 int main()
 {
-	Poly p;
-
-	cout << p.getSquare() << endl;
 	return 0;
 }
