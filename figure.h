@@ -2,17 +2,18 @@
 
 #define _FIGURE
 
-#include "head.h"
+#include "point.h"
+#include "segment.h"
 
-class AFigure {
+class Afigure {
 	protected:
-		double square;
+		double _square;
 
 	public:
-		template <typename U> bool isContain(Point<U>);
-		template <typename U> bool isIntersect(Segment<U>);
+		template <typename U> bool isContain(point<U>);
+		template <typename U> bool isIntersect(segment<U>);
 
-		double getSquare() { return square; }
+		double square() const { return _square; }
 };
 
 #endif

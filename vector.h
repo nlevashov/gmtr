@@ -1,104 +1,97 @@
+#ifndef _MYVECTOR
+
+#define _MYVECTOR
+
 #include <cstdlib>
 #include <cstring>
 
-namespace myVector {
+namespace myvector {
 	template <typename T = double>
 	class vector {
 		private:
-			typedef struct {
-				T x, y;
-			} SPoint;
-
-			SPoint * startPoint;
-			unsigned int num, memory;
-
-			void qsort(unsigned int, unsigned int);
+			T * _begin;
+			size_t _size, _memory;
 
 		public:
 			vector();
-			vector(unsigned int n);
-			vector(vector const & v);
+			vector(size_t);
+			vector(vector const &);
 			~vector();
 
-			unsigned int getNum() { return num; }
+			size_t size() const { return _size; }
+			size_t memory() const { return _memory; }
 
-			vector operator=(vector const & v);
-			SPoint & operator[](unsigned int i);
-
-			void sort() { if (num > 1) qsort(0, num - 1); }
+			vector operator = (vector const &);
+			T & operator [] (size_t i);
+			T operator () (size_t i) const;
+			void resize(size_t n);
 	};
 
 	template <typename T>
-	void vector<T> :: qsort(unsigned int low, unsigned int high)
-		{
-			long l = low, r = high;
-			T midY = startPoint[(l + r) / 2].y;
-			SPoint temp;
-			do {
-				while (startPoint[l].y < midY) ++l;
-				while (startPoint[r].y > midY) --r;
-				if (l <= r) {
-					temp = startPoint[l];
-					startPoint[l] = startPoint[r];
-					startPoint[r] = temp;
-					++l; --r;
-				}
-			} while (l < r);
-
-			if (low < r) qsort(low, r);
-			if (l < high) qsort(l, high);
-		}
-
-	template <typename T>
-	vector<T> :: vector() {
-			startPoint = new SPoint[64];
-			memory = 64;
-			num = 0;
-		}
-
-	template <typename T>
-	vector<T> :: vector(unsigned int n)
+	vector<T> :: vector() : _memory(64), _size(0)
 	{
-		startPoint = new SPoint[n];
-		memory = n;
-		num = n;
+		_begin = new T[64];
 	}
 
 	template <typename T>
-	vector<T> :: vector(vector const & v)
+	vector<T>::vector(size_t n) : _memory(n), _size(n)
 	{
-		startPoint = new SPoint[v.num];
-		memcpy(startPoint, v.startPoint, sizeof(SPoint) * v.num);
-		memory = v.num;
-		num = v.num;
+		_begin = new T[n];
+		_memory = n;
+		_size = n;
 	}
 
 	template <typename T>
-	vector<T> :: ~vector()
+	vector<T>::vector(vector const & v)
 	{
-		delete startPoint;
+		_begin = new T[v._memory];
+		memcpy(_begin, v._begin, sizeof(T) * v._memory);
+		_memory = v._memory;
+		_size = v._size;
 	}
 
 	template <typename T>
-	vector<T> vector<T> :: operator=(vector<T> const & v)
+	vector<T>::~vector()
 	{
-		startPoint = (SPoint *) realloc(startPoint, sizeof(SPoint) * v.num);
-		memcpy(startPoint, v.startPoint, sizeof(SPoint) * v.num);
-		memory = v.num;
-		num = v.num;
+		delete _begin;
+	}
+
+	template <typename T>
+	vector<T> vector<T>::operator = (vector<T> const & v)
+	{
+		_begin = (T *) realloc(_begin, sizeof(T) * v._memory);
+		memcpy(_begin, v._begin, sizeof(T) * v._memory);
+		_memory = v._memory;
+		_size = v._size;
 		return *this;
 	}
 
 	template <typename T>
-	typename vector<T>::SPoint & vector<T> :: operator[](unsigned int i)
+	T & vector<T>::operator [] (size_t i)
 	{
-		if (i >= num) {
-			unsigned int newMemory = 64;
-			while (newMemory <= i) newMemory <<= 1;
-			startPoint = (SPoint *) realloc(startPoint, sizeof(SPoint) * newMemory);
-			memory = newMemory;
-			num = i + 1;
+		if (i >= _size) {
+			_size = i + 1;
+			if (i >= _memory) {
+				while (_memory <= i) _memory <<= 2;
+				_begin = (T *) realloc(_begin, sizeof(T) * _memory);
+			}
 		}
-		return startPoint[i];
+		return _begin[i];
+	}
+
+	template <typename T>
+	T vector<T>::operator () (size_t i) const
+	{
+		if (i < _size) return _begin[i];
+	}
+
+	template <typename T>
+	void vector<T>::resize(size_t n)
+	{
+		_begin = (T *) realloc(_begin, sizeof(T) * n);
+		_memory = n;
+		if (_size > n) _size = n;
 	}
 }
+
+#endif

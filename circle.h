@@ -1,50 +1,67 @@
-#include "head.h"
+#ifndef _CIRCLE
+
+#define _CIRCLE
+
 #include "figure.h"
-
-#include <iostream>
+#include "point.h"
+#include "segment.h"
 #include <cmath>
-using std::cin;
 
-template <typename T>
-class Circle : public AFigure {
+template <class T = double>
+class circle : public Afigure {
 	private:
-		T radius, x, y;
+		T _radius, _x, _y;
 
 	public:
-		Circle() {
-			cin >> radius >> x >> y;
-			square = M_PI * radius;
+		circle() {}
+
+		circle(T radius, T centerX, T centerY) : _radius(radius), _x(centerX), _y(centerY)
+		{
+			_square = (double) M_PI * _radius * _radius;
 		}
 
-		Circle(T rad, T centerX, T centerY) {
-			radius = rad;
-			x = centerX;
-			y = centerY;
-			square = (double) M_PI * radius;
+		template <class U>
+		circle(const circle<U> & c) : _radius(T (c.radius())), _x(T (c.x())), _y(T (c.y()))
+		{
+			_square = c.square();
 		}
 
-		T getRadius() { return radius; }
-		T getX() { return x; }
-		T getY() { return y; }
-
-		bool isContain(Point<T> p) {
-			return ((x - p.x) * (x - p.x) + (y - p.y) * (y - p.y) <= radius * radius);
+		template <class U>
+		circle & operator = (const circle<U> & c)
+		{
+			_radius = T (c.radius());
+			_x = T (c.x());
+			_y = T (c.y());
+			_square = c.square();
+			return *this;
 		}
 
-		bool isIntersect(Segment<T> s) {
+		T radius() const { return _radius; }
+		T x() const { return _x; }
+		T y() const { return _y; }
+
+		template <class U>
+		bool isContain(point<U> p) {
+			return ((_x - p.x()) * (_x - p.x()) + (_y - p.y()) * (_y - p.y()) <= _radius * _radius);
+		}
+
+		template <class U>
+		bool isIntersect(segment<U> s) {
 			double xt, yt;
 
-			if (s.x1 == s.x2) {
-				xt = s.x1;
-				yt = y;
+			if (s.x1() == s.x2()) {
+				xt = s.x1();
+				yt = _y;
 			} else {
-				double k = (s.y1 - s.y2) / (s.x1 - s.x2);
-				xt = (x + (y - s.y1) * k + s.x1 * k * k) / (1 + k * k);
-				yt = (s.y1 + (x - s.x1) * k + y * k * k) / (1 + k * k);
+				double k = (s.y1() - s.y2()) / (s.x1() - s.x2());
+				xt = (_x + (_y - s.y1()) * k + s.x1() * k * k) / (1 + k * k);
+				yt = (s.y1() + (_x - s.x1()) * k + _y * k * k) / (1 + k * k);
 			}
 
-			return ( (s.isContain(Point<>(xt, yt)) && ((x - xt) * (x - xt) + (y - yt) * (y - yt) <= radius * radius) )
-				|| ((x - s.x1) * (x - s.x1) + (y - s.y1) * (y - s.y1) <= radius * radius)
-				|| ((x - s.x2) * (x - s.x2) + (y - s.y2) * (y - s.y2) <= radius * radius) );
+			return ( (s.isContain(point<double>(xt, yt)) && ((_x - xt) * (_x - xt) + (_y - yt) * (_y - yt) <= _radius * _radius) )
+				|| ((_x - s.x1()) * (_x - s.x1()) + (_y - s.y1()) * (_y - s.y1()) <= _radius * _radius)
+				|| ((_x - s.x2()) * (_x - s.x2()) + (_y - s.y2()) * (_y - s.y2()) <= _radius * _radius) );
 		}
 };
+
+#endif

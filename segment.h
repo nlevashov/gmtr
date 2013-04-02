@@ -1,49 +1,72 @@
-#include "head.h"
+#ifndef _SEGMENT
 
-#include <iostream>
+#define _SEGMENT
+
+#include "point.h"
 #include <cmath>
-using std::cin;
 
-template <typename T>
-class Segment {
+template <class T = double>
+class segment {
 	private:
-		T x1, y1, x2, y2;
+		T _x1, _y1, _x2, _y2;
 
 	public:
-		Segment() {
-			cin >> x1 >> y1 >> x2 >> y2;
+		segment() {}
+
+		segment(T ax, T ay, T bx, T by) : _x1(ax), _y1(ay), _x2(bx), _y2(by) {}
+
+		template <class U>
+		segment(const segment<U> & s) : _x1(T (s.x1())), _y1(T (s.y1())), _x2(T (s.x2())), _y2(T (s.y2())) {}
+
+		template <class U>
+		segment & operator = (const segment<U> & s)
+		{
+			_x1 = T (s.x1());
+			_y1 = T (s.y1());
+			_x2 = T (s.x2());
+			_y2 = T (s.y2());
+			return * this;
 		}
 
-		Segment(T ax, T ay, T bx, T by) {
-			x1 = ax;
-			y1 = ay;
-			x2 = bx;
-			y2 = by;
+		T x1() const { return _x1; }
+		T y1() const { return _y1; }
+		T x2() const { return _x2; }
+		T y2() const { return _y2; }
+
+		template <class U>		//is it possible to use??
+		bool isContain(point<U> p) {
+			return ( ((p.x() >= _x1 && p.x() <= _x2) || (p.x() <= _x1 && p.x() >= _x2))
+				&& ((p.y() >= _y1 && p.y() <= _y2) || (p.y() <= _y1 && p.y() >= _y2))
+				&& (std::abs((p.y() - _y1) * (_x1 - _x2) - (p.x() - _x1) * (_y1 - _y2)) <= 0.000000000000001) );
 		}
 
-		T getX1() { return x1; }
-		T getY1() { return y1; }
-		T getX2() { return x2; }
-		T getY2() { return y2; }
-
-		bool isContain(Point<T> p) {
-			return ( ((p.x >= x1 && p.x <= x2) || (p.x <= x1 && p.x >= x2))
-				&& ((p.y >= y1 && p.y <= y2) || (p.y <= y1 && p.y >= y2))
-				&& (std::abs((p.y - y1) * (x1 - x2) - (p.x - x1) * (y1 - y2)) <= 0.000000000000001));
-		}
-
-		int isIntersect(Segment<T> b) {	// 0 - не паралельны, пересечений нет; 1 - не паралельны, есть пересечение; 2 - паралельны, нет общих точек; 3 - паралельны, имеют общую область;
-			double parallel = (y1 - y2) * (b.x1 - b.x2) - (b.y1 - b.y2) * (x1 - x2);
+		template <class U>
+		bool isIntersect(segment<U> s) {
+			double parallel = (_y1 - _y2) * (s.x1() - s.x2()) - (s.y1() - s.y2()) * (_x1 - _x2);
 			if (parallel == 0) {
-				if (this -> isContain(Point<T>(b.x1, b.y1)) || this -> isContain(Point<T>(b.x2, b.y2))) return 3;
-				else return 2;
+				if (this -> isContain(point<T>(s.x1(), s.y1())) || this -> isContain(point<T>(s.x2(), s.y2()))) return true;
+				else return false;
 			} else {
 				double
-					x = ((b.y1 - y1) * (x1 - x2) * (b.x1 - b.x2) + x1 * (y1 - y2) * (b.x1 - b.x2) - b.x1 * (b.y1 - b.y2) * (x1 - x2)) / parallel,
-					y = (x1 == x2) ? ((b.y1 - b.y2) * (x - b.x1) / (b.x1 - b.x2) + b.y1) : ((y1 - y2) * (x - x1) / (x1 - x2) + y1);
-				return (this -> isContain(Point<T>(x, y)) && b.isContain(Point<T>(x, y)));
+					x = ((s.y1() - _y1) * (_x1 - _x2) * (s.x1() - s.x2()) + _x1 * (_y1 - _y2) * (s.x1() - s.x2()) - s.x1() * (s.y1() - s.y2()) * (_x1 - _x2)) / parallel,
+					y = (_x1 == _x2) ? ((s.y1() - s.y2()) * (x - s.x1()) / (s.x1() - s.x2()) + s.y1()) : ((_y1 - _y2) * (x - _x1) / (_x1 - _x2) + _y1);
+				return (this -> isContain(point<double>(x, y)) && s.isContain(point<double>(x, y)));
 			}
 		}
 
-		friend Circle<T>;
+		template <class U>
+		int isIntersectDetail(segment<U> s) {	// 0 - не паралельны, пересечений нет; 1 - не паралельны, есть пересечение; 2 - паралельны, нет общих точек; 3 - паралельны, имеют общую область;
+			double parallel = (_y1 - _y2) * (s.x1() - s.x2()) - (s.y1() - s.y2()) * (_x1 - _x2);
+			if (parallel == 0) {
+				if (this -> isContain(point<T>(s.x1(), s.y1())) || this -> isContain(point<T>(s.x2(), s.y2()))) return 3;
+				else return 2;
+			} else {
+				double
+					x = ((s.y1() - _y1) * (_x1 - _x2) * (s.x1() - s.x2()) + _x1 * (_y1 - _y2) * (s.x1() - s.x2()) - s.x1() * (s.y1() - s.y2()) * (_x1 - _x2)) / parallel,
+					y = (_x1 == _x2) ? ((s.y1() - s.y2()) * (x - s.x1()) / (s.x1() - s.x2()) + s.y1()) : ((_y1 - _y2) * (x - _x1) / (_x1 - _x2) + _y1);
+				return (this -> isContain(point<double>(x, y)) && s.isContain(point<double>(x, y)));
+			}
+		}
 };
+
+#endif

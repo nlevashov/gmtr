@@ -1,27 +1,30 @@
-#include "head.h"
+#ifndef _POINT
 
-#include <iostream>
-using std::cin;
+#define _POINT
 
-template <typename T>
-class Point {
+template <class T = double>
+class point {
 	private:
-		T x, y;
+		T _x, _y;
 
 	public:
-		Point() {
-			cin >> x >> y;
+		point() {}
+
+		point(T p, T q) : _x(p), _y(q) {}
+
+		template <class U>
+		point(const point<U> & p) : _x(T (p.x())), _y(T (p.y())) {}
+
+		template <class U>
+		point & operator = (const point<U> & p)
+		{
+			_x = T (p.x());
+			_y = T (p.y());
+			return *this;
 		}
 
-		Point(T p, T q) {
-			x = p;
-			y = q;
-		}
-
-		T getX() { return x; }
-		T getY() { return y; }
-
-		friend Segment<T>;
-		friend Circle<T>;
-		friend Poly<T>;
+		T x() const { return _x; }
+		T y() const { return _y; }
 };
+
+#endif

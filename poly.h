@@ -1,103 +1,90 @@
-#include "head.h"
+#ifndef _POLY
+
+#define _POLY
+
 #include "figure.h"
+#include "point.h"
+#include "segment.h"
 #include "vector.h"
-using namespace myVector;
-
-#include <iostream>
 #include <cmath>
-using std::cin;
+using namespace myvector;
 
-template <typename T>
-class Poly : public AFigure {
+template <class T>
+class poly : public Afigure {
 	private:
-		unsigned int angleNum;
-		vector<T> a;
-		vector<T> aSorted;
-		double * aAngles;
+		struct Tpoint {
+			T _x, _y;
+		};
 
-		void aSort() {
-			unsigned int iMin = 0;
-			for (int i = 1; i < angleNum; ++i)
-				if ((a[i].y < a[iMin].y) || (a[i].y == a[iMin].y && a[i].x < a[iMin].x)) iMin = i;
-
-			vector<> r;
-			unsigned int j = 0, k = 0;
-			for (int i = 0; i < angleNum; ++i) {
-				if (a[i].x <= a[iMin].x) aSorted[j++] = a[i];
-				else r[k++] = a[i];
-			}
-
-			aSorted.sort();
-			r.sort();
-			for (int i = k - 1; i >= 0; --i) aSorted[j++] = r[i];
-
-			unsigned int aSortedNum = aSorted.getNum();
-			for (int i = 1; i < aSortedNum; ++i)
-				aAngles[i] = (aSorted[i].x - aSorted[0].x)
-						/ sqrt((aSorted[i].x - aSorted[0].x) * (aSorted[i].x - aSorted[0].x)
-							 + (aSorted[i].y - aSorted[0].y) * (aSorted[i].y - aSorted[0].y));
-		}
+		vector<Tpoint> _points;
 
 	public:
-		Poly() {
-			cin >> angleNum;
-			for (int i = 0; i < angleNum; ++i) cin >> a[i].x >> a[i].y;
-			aAngles = new double[angleNum];
-			aSort();
-			square = 0;
-			for (int i = 2; i < angleNum; ++i)
-				square += abs( (aSorted[i-1].x - aSorted[0].x) * (aSorted[i].y - aSorted[0].y)
-						- (aSorted[i].x - aSorted[0].x) * (aSorted[i-1].y - aSorted[0].y) ) / 2;
-		}
+		poly() {}
 
-		Poly(int n, T * b) {
-			angleNum = n;
-			for (int i = 0; i < 2 * n; i += 2) {
-				a[i].x = b[i];
-				a[i].y = b[i + 1];
+		poly(size_t n, T * coords)	//количество точек, массив точек (x0, y0, x1, y1, ...) в том порядке в котором он расположены на многоугольнике (по или против часовой стрелки)
+		{
+			for (size_t i = 0; i < n; i++) {
+				_points[i]._x = coords[i * 2];
+				_points[i]._y = coords[i * 2 + 1];
 			}
-			aAngles = new double[angleNum];
-			aSort();
-			square = 0;
-			for (int i = 2; i < angleNum; ++i)
-				square += abs( (aSorted[i-1].x - aSorted[0].x) * (aSorted[i].y - aSorted[0].y)
-						- (aSorted[i].x - aSorted[0].x) * (aSorted[i-1].y - aSorted[0].y) ) / 2;
-		}
 
-		~Poly() {
-			delete aAngles;
-		}
-
-		unsigned int getAngleNum() { return angleNum; }
-		T getAx(unsigned int i) { return a[i].x; }
-		T getAy(unsigned int i) { return a[i].y; }
-
-		bool isContain(Point<> p) {
-			if (p.y >= aSorted[0].y) {
-				double cosP = (p.x - aSorted[0].x) / sqrt((p.x - aSorted[0].x) * (p.x - aSorted[0].x) + (p.y - aSorted[0].y) * (p.y - aSorted[0].y));
-				bool flag = false;
-				int i;
-				for (i = 1; i < angleNum; ++i) {
-					if (cosP <= aAngles[i]) {
-						flag = true;
-						break;
-					}
-				}
-
-				if (flag && ((i != 1) || (i == 1) && Segment<T>(aSorted[0].x, aSorted[0].y, aSorted[1].x, aSorted[1].y).isContain(p))) {	//i-1, i
-					Segment<T> s(aSorted[i-1].x, aSorted[i-1].y, aSorted[i].x, aSorted[i].y);
-					return ( s.isContain(p) || (! s.isIntersect(Segment<>(aSorted[0].x, aSorted[0].y, p.x, p.y))) );
-				} else return false;
-
-			} else return false;
-		}
-
-		bool isIntersect(Segment<> s) {
-			bool flag;
-			for (int i = 0; i < angleNum - 1; ++i) {
-				flag = s.isIntersect(Segment<T>(aSorted[i].x, aSorted[i].y, aSorted[i+1].x, aSorted[i+1].y));
-				if (flag) return true;
+			_square = 0;
+			for (size_t i = 1; i < n - 1; i++) {
+				_square += abs ( 0.5 * ((_points[i]._x - _points[0]._x) * (_points[i+1]._y - _points[0]._y) - (_points[i+1]._x - _points[0]._x) * (_points[i]._y - _points[0]._y)) );
+				//0,5*[(x1-x3)(y2-y3)-(x2-x3)(y1-y3)]
 			}
-			if (! flag) return s.isIntersect(Segment<T>(aSorted[angleNum-1].x, aSorted[angleNum-1].y, aSorted[0].x, aSorted[0].y));
+		}
+
+		template <class U>
+		poly(const poly<U> & p)
+		{
+			for (size_t i = 0; i < p.points_num(); i++) {
+				_points[i]._x = T (p.x(i));
+				_points[i]._y = T (p.y(i));
+			}
+
+			_square = p.square();
+		}
+
+		template <class U>
+		poly & operator = (const poly<U> & p)
+		{
+			_points.resize(p.points_num());
+
+			for (size_t i = 0; i < p.points_num(); i++) {
+				_points[i]._x = p.x(i);
+				_points[i]._y = p.y(i);
+			}
+
+			_square = p.square();
+			return *this;
+		}
+
+		size_t points_num() const { return _points.size(); }
+		T x(size_t i) const { return _points(i)._x; }
+		T y(size_t i) const { return _points(i)._y; }
+
+		template <class U>
+		bool isContain(point<U> p)
+		{
+			double xMin = _points[0]._x;
+			double xMax = _points[0]._x;
+			for (size_t i = 1; i < _points.size(); i++) {
+				if (_points[i]._x < xMin) xMin = _points[i]._x;
+				if (_points[i]._x > xMax) xMax = _points[i]._x;
+			}
+
+			return (isIntersect(segment<double>(xMin - 1, double (p.y()), double (p.x()), double (p.y()))) && isIntersect(segment<double>(xMax + 1, double (p.y()), double (p.x()), double (p.y()))));
+		}
+
+		template <class U>
+		bool isIntersect(segment<U> s)
+		{
+			for (size_t i = 0; i < _points.size() - 1; i++)
+				if (s.isIntersect( segment<T>(_points[i]._x, _points[i]._y, _points[i+1]._x, _points[i+1]._y) )) return true;
+
+			return s.isIntersect(segment<T>(_points[0]._x, _points[0]._y, _points[_points.size() - 1]._x, _points[_points.size() - 1]._y));
 		}
 };
+
+#endif
