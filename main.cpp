@@ -3,7 +3,7 @@
 #include <iostream>
 using namespace std;
 
-//poly testing (с памятью твориться что-то странное, но она не растет)
+/*/poly testing (с памятью твориться что-то странное, но она не растет)
 
 int main ()
 {
@@ -30,9 +30,9 @@ int main ()
 	return 0;
 }
 
+*/
 
-
-/* circle testing
+// circle testing
 
 int main ()
 {
@@ -62,7 +62,7 @@ int main ()
 	return 0;
 }
 
-*/
+//
 
 /* segment testing
 

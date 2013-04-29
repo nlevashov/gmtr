@@ -5,6 +5,8 @@
 #include "point.h"
 #include <cmath>
 
+//привидение
+
 template <class T = double>
 class segment {
 	private:

@@ -7,6 +7,9 @@
 #include "segment.h"
 #include <cmath>
 
+//приведение при использовании double
+//площадь изменяется
+
 template <class T = double>
 class circle : public Afigure {
 	private:
