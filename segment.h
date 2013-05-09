@@ -5,7 +5,7 @@
 #include "point.h"
 #include <cmath>
 
-//привидение
+//(fixed)привидение
 
 template <class T = double>
 class segment {
@@ -35,7 +35,7 @@ class segment {
 		T x2() const { return _x2; }
 		T y2() const { return _y2; }
 
-		template <class U>		//is it possible to use??
+		template <class U>
 		bool isContain(point<U> p) {
 			return ( ((p.x() >= _x1 && p.x() <= _x2) || (p.x() <= _x1 && p.x() >= _x2))
 				&& ((p.y() >= _y1 && p.y() <= _y2) || (p.y() <= _y1 && p.y() >= _y2))
@@ -50,8 +50,8 @@ class segment {
 				else return false;
 			} else {
 				double
-					x = ((s.y1() - _y1) * (_x1 - _x2) * (s.x1() - s.x2()) + _x1 * (_y1 - _y2) * (s.x1() - s.x2()) - s.x1() * (s.y1() - s.y2()) * (_x1 - _x2)) / parallel,
-					y = (_x1 == _x2) ? ((s.y1() - s.y2()) * (x - s.x1()) / (s.x1() - s.x2()) + s.y1()) : ((_y1 - _y2) * (x - _x1) / (_x1 - _x2) + _y1);
+					x = ((double) (s.y1() - _y1) * (_x1 - _x2) * (s.x1() - s.x2()) + _x1 * (_y1 - _y2) * (s.x1() - s.x2()) - s.x1() * (s.y1() - s.y2()) * (_x1 - _x2)) / parallel,
+					y = (_x1 == _x2) ? ((double) (s.y1() - s.y2()) * (x - s.x1()) / (s.x1() - s.x2()) + s.y1()) : ((double) (_y1 - _y2) * (x - _x1) / (_x1 - _x2) + _y1);
 				return (this -> isContain(point<double>(x, y)) && s.isContain(point<double>(x, y)));
 			}
 		}
@@ -64,8 +64,8 @@ class segment {
 				else return 2;
 			} else {
 				double
-					x = ((s.y1() - _y1) * (_x1 - _x2) * (s.x1() - s.x2()) + _x1 * (_y1 - _y2) * (s.x1() - s.x2()) - s.x1() * (s.y1() - s.y2()) * (_x1 - _x2)) / parallel,
-					y = (_x1 == _x2) ? ((s.y1() - s.y2()) * (x - s.x1()) / (s.x1() - s.x2()) + s.y1()) : ((_y1 - _y2) * (x - _x1) / (_x1 - _x2) + _y1);
+					x = ((double) (s.y1() - _y1) * (_x1 - _x2) * (s.x1() - s.x2()) + _x1 * (_y1 - _y2) * (s.x1() - s.x2()) - s.x1() * (s.y1() - s.y2()) * (_x1 - _x2)) / parallel,
+					y = (_x1 == _x2) ? ((double) (s.y1() - s.y2()) * (x - s.x1()) / (s.x1() - s.x2()) + s.y1()) : ((double) (_y1 - _y2) * (x - _x1) / (_x1 - _x2) + _y1);
 				return (this -> isContain(point<double>(x, y)) && s.isContain(point<double>(x, y)));
 			}
 		}

@@ -32,7 +32,7 @@ int main ()
 
 */
 
-// circle testing
+/* circle testing
 
 int main ()
 {
@@ -62,9 +62,9 @@ int main ()
 	return 0;
 }
 
-//
+*/
 
-/* segment testing
+// segment testing
 
 int main ()
 {
@@ -87,10 +87,13 @@ int main ()
 
 		segment<float> g(1.5, 3, 3.5, 1.5);
 		cout << a.isIntersect(g) << endl;
+
+		segment<int> h(1, 4, 2, 5);
+		cout << a.isIntersect(h) << endl;
 //	}
 }
 
-*/
+//
 
 /* point testing
 

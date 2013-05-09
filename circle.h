@@ -7,8 +7,8 @@
 #include "segment.h"
 #include <cmath>
 
-//приведение при использовании double
-//площадь изменяется
+//(не уверен, что это значит, но при подсчетах fixed)приведение при использовании double
+//(fixed)площадь изменяется
 
 template <class T = double>
 class circle : public Afigure {
@@ -26,7 +26,7 @@ class circle : public Afigure {
 		template <class U>
 		circle(const circle<U> & c) : _radius(T (c.radius())), _x(T (c.x())), _y(T (c.y()))
 		{
-			_square = c.square();
+			_square = (double) M_PI * _radius * _radius;
 		}
 
 		template <class U>
@@ -35,7 +35,7 @@ class circle : public Afigure {
 			_radius = T (c.radius());
 			_x = T (c.x());
 			_y = T (c.y());
-			_square = c.square();
+			_square = (double) M_PI * _radius * _radius;
 			return *this;
 		}
 
@@ -56,9 +56,9 @@ class circle : public Afigure {
 				xt = s.x1();
 				yt = _y;
 			} else {
-				double k = (s.y1() - s.y2()) / (s.x1() - s.x2());
-				xt = (_x + (_y - s.y1()) * k + s.x1() * k * k) / (1 + k * k);
-				yt = (s.y1() + (_x - s.x1()) * k + _y * k * k) / (1 + k * k);
+				double k = ((double) s.y1() - s.y2()) / (s.x1() - s.x2());
+				xt = ((double) _x + (_y - s.y1()) * k + s.x1() * k * k) / (1 + k * k);
+				yt = ((double) s.y1() + (_x - s.x1()) * k + _y * k * k) / (1 + k * k);
 			}
 
 			return ( (s.isContain(point<double>(xt, yt)) && ((_x - xt) * (_x - xt) + (_y - yt) * (_y - yt) <= _radius * _radius) )
